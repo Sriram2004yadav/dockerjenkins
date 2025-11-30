@@ -6,8 +6,8 @@ pipeline {
         IMAGENAME = 'sriram040/flaskapp'
         GITREPO = 'https://github.com/Sriram2004yadav/dockerpractice'
         BRANCH = 'main'
-        // Set this if you use a custom kubeconfig location (optional)
-        // KUBECONFIG = 'C:\\path\\to\\kubeconfig'
+        // 🔥 Point kubectl to your HP user's kubeconfig
+        KUBECONFIG = 'C:\\Users\\HP\\.kube\\config'
     }
 
     stages {
@@ -22,7 +22,6 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker image..."
-                    // Tag with build number AND latest
                     bat "docker build -t ${IMAGENAME}:${BUILD_NUMBER} -t ${IMAGENAME}:latest ."
                 }
             }
@@ -40,20 +39,26 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            // 🔥 remove the "false" condition so it actually runs
-            when {
-                expression { return true }  // or remove 'when' block entirely
-            }
             steps {
                 script {
-                    echo 'Deploying to Kubernetes...'
-                    // Make sure kubectl is installed and in PATH on this Jenkins node
                     bat """
-                    kubectl version --client
+                    echo ===== Using kubeconfig =====
+                    echo %KUBECONFIG%
+
+                    echo ===== Current context =====
                     kubectl config current-context
+
+                    echo ===== Workspace contents =====
+                    dir
+
+                    echo ===== Applying manifests =====
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
+
+                    echo ===== Pods =====
                     kubectl get pods
+
+                    echo ===== Services =====
                     kubectl get svc
                     """
                 }
