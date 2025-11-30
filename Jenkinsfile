@@ -6,6 +6,8 @@ pipeline {
         IMAGENAME = 'sriram040/flaskapp'
         GITREPO = 'https://github.com/Sriram2004yadav/dockerpractice'
         BRANCH = 'main'
+        // Set this if you use a custom kubeconfig location (optional)
+        // KUBECONFIG = 'C:\\path\\to\\kubeconfig'
     }
 
     stages {
@@ -37,17 +39,23 @@ pipeline {
             }
         }
 
-        // OPTIONAL: only if kubectl is installed on Jenkins and configured
         stage('Deploy to Kubernetes') {
+            // 🔥 remove the "false" condition so it actually runs
             when {
-                expression { return false } // change to `true` when ready
+                expression { return true }  // or remove 'when' block entirely
             }
             steps {
                 script {
-                    echo 'Applying Kubernetes manifests...'
-                    // Make sure deployment.yaml and service.yaml are in repo root
-                    bat "kubectl apply -f deployment.yaml"
-                    bat "kubectl apply -f service.yaml"
+                    echo 'Deploying to Kubernetes...'
+                    // Make sure kubectl is installed and in PATH on this Jenkins node
+                    bat """
+                    kubectl version --client
+                    kubectl config current-context
+                    kubectl apply -f deployment.yaml
+                    kubectl apply -f service.yaml
+                    kubectl get pods
+                    kubectl get svc
+                    """
                 }
             }
         }
