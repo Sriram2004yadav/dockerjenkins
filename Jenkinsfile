@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred')
         IMAGENAME = 'sriram040/flaskapp'
-        GITREPO = 'https://github.com/Sriram2004yadav/dockerpractice'
+        GITREPO = 'https://github.com/Sriram2004yadav/dockerjenkins'
         BRANCH = 'main'
         // 🔥 Point kubectl to your HP user's kubeconfig
         KUBECONFIG = 'C:\\Users\\HP\\.kube\\config'
